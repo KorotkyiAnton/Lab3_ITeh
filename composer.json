@@ -1,0 +1,11 @@
+{
+    "require": {
+        "ramsey/uuid": "^4.2",
+      "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Db\\": "./db"
+        }
+    }
+}
