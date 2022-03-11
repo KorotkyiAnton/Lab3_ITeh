@@ -11,8 +11,6 @@ class DbAccess
      */
 
     private $db;
-    static $fosrmStart = "<form method='post' action=''>";
-    static $formEnd = "</form>";
 
     public function __construct()
     {
@@ -22,12 +20,12 @@ class DbAccess
 
     public function chooseRequest(array $post)
     {
-        if (isset($post["bookByPublisher"])) {
-            $this->findBookByPublisher($post["publisher"]);
-        } elseif (isset($post["literatureByDate"])) {
-            $this->findLiteratureByDate($post["dateStart"], $post["dateEnd"]);
-        } elseif (isset($post["bookByAuthor"])) {
-            $this->findBookByAuthor($post["author"]);
+        if (isset($post["publisher"])) {
+            return $this->findBookByPublisher($post["publisher"]);
+        } elseif (isset($post["dateEnd"])) {
+            return $this->findLiteratureByDate($post["dateStart"], $post["dateEnd"]);
+        } elseif (isset($post["author"])) {
+            return $this->findBookByAuthor($post["author"]);
         }
     }
 
@@ -35,11 +33,12 @@ class DbAccess
     {
         $statement = $this->db->prepare("SELECT name, ISBN, publisher, date, quantity FROM literatures WHERE publisher=?");
         $statement->execute([$publisher]);
+        $str = "";
 
-        echo "<table style='text-align: center'>";
-        echo "<tr><th>Name</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Number Of Pages</th></tr>";
+        $str .= "<table style='text-align: center'>";
+        $str .= "<tr><th>Name</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Number Of Pages</th></tr>";
         while ($data = $statement->fetch()) {
-            echo "
+            $str .= "
                 <tr>
                     <td>{$data['name']}</td>
                     <td>{$data['ISBN']}</td>
@@ -49,17 +48,19 @@ class DbAccess
                 </tr>
             ";
         }
+        return $str;
     }
 
     private function findLiteratureByDate(mixed $dateStart, mixed $dateEnd)
     {
         $statement = $this->db->prepare("SELECT name, date, literate FROM literatures WHERE date BETWEEN ? AND ?");
         $statement->execute([$dateStart, $dateEnd]);
+        $str = "";
 
-        echo "<table style='text-align: center'>";
-        echo "<tr><th>Name</th><th>Date</th><th>Literate</th>";
+        $str .= "<table style='text-align: center' id='dateTable'>";
+        $str .= "<tr><th>Name</th><th>Date</th><th>Literate</th>";
         while ($data = $statement->fetch()) {
-            echo "
+            $str .= "
                 <tr>
                     <td>{$data['name']}</td>
                     <td>{$data['date']}</td>
@@ -67,6 +68,8 @@ class DbAccess
                 </tr>
             ";
         }
+        $str .= "</table>";
+        return $str;
     }
 
     private function findBookByAuthor(string $author)
@@ -78,11 +81,12 @@ class DbAccess
             WHERE literatures.literate = 'Book' AND authors.name = ?
         ");
         $statement->execute([$author]);
+        $str = "";
 
-        echo "<table style='text-align: center'>";
-        echo "<tr><th>Name</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Number Of Pages</th><th>Author Name</th></tr>";
+        $str .= "<table style='text-align: center'>";
+        $str .= "<tr><th>Name</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Number Of Pages</th><th>Author Name</th></tr>";
         while ($data = $statement->fetch()) {
-            echo "
+            $str .= "
                 <tr>
                     <td>{$data[0]}</td>
                     <td>{$data['ISBN']}</td>
@@ -93,6 +97,7 @@ class DbAccess
                 </tr>
             ";
         }
+        return json_encode($str);
     }
 
     public function viewSelect(string $name)

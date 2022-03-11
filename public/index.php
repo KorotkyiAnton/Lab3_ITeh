@@ -22,28 +22,33 @@ $db = new \Db\DbAccess();
         }
     </style>
 
+    <script src="script.js" ></script>
+
 </head>
 <body>
 
-<?php
-echo \Db\DbAccess::$fosrmStart;
-$db->viewSelect("publisher");
-echo \Db\DbAccess::$formEnd;
+</div>
 
-echo \Db\DbAccess::$fosrmStart;
-$db->viewDate();
-echo \Db\DbAccess::$formEnd;
+<form id="selectByPublisherForm">
+    <?php
+    $db->viewSelect("publisher");
+    ?>
+</form>
 
-echo \Db\DbAccess::$fosrmStart;
-$db->viewSelect("author");
-echo \Db\DbAccess::$formEnd;
-?>
+<form id="selectByDateForm">
+    <?php
+    $db->viewDate();
+    ?>
+</form>
+
+<form id="selectByAuthorForm">
+    <?php
+    $db->viewSelect("author");
+    ?>
+</form>
 
 <hr>
-<?php
-if (isset($_POST)) {
-$db->chooseRequest($_POST);
-}
-?>
+
+<div id="results"></div>
 </body>
 </html>
